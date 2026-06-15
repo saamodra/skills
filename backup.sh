@@ -1,48 +1,44 @@
 #!/bin/bash
 set -e
 
-BACKUP_AGENTS=false
-
-for arg in "$@"; do
-    case $arg in
-        -a|--agents-md)
-            BACKUP_AGENTS=true
-            shift
-            ;;
-    esac
-done
-
-SOURCE_DIR="$HOME/.agents/skills"
 DEST_DIR="$(pwd)/skills"
+FILES_DEST_DIR="$(pwd)/files"
 
 mkdir -p "$DEST_DIR"
+mkdir -p "$FILES_DEST_DIR"
 
-if [ ! -f "skills.txt" ]; then
-    echo "Error: skills.txt not found."
+if [ ! -f "whitelist.txt" ]; then
+    echo "Error: whitelist.txt not found."
     exit 1
 fi
 
-while IFS= read -r skill; do
+while IFS= read -r item; do
     # Skip empty lines and comments
-    if [[ -z "$skill" ]] || [[ "$skill" == \#* ]]; then
+    if [[ -z "$item" ]] || [[ "$item" == \#* ]]; then
         continue
     fi
     
-    if [ -d "$SOURCE_DIR/$skill" ]; then
-        echo "Backing up skill: $skill"
-        cp -R "$SOURCE_DIR/$skill" "$DEST_DIR/"
+    # Expand tilde to HOME directory
+    item="${item/#\~/$HOME}"
+    
+    if [[ "$item" == /* ]]; then
+        # It's an absolute path
+        if [ -e "$item" ]; then
+            echo "Backing up file/dir: $item"
+            cp -R "$item" "$FILES_DEST_DIR/"
+        else
+            echo "Warning: Path '$item' not found."
+        fi
     else
-        echo "Warning: Skill '$skill' not found in $SOURCE_DIR"
+        # It's a skill name
+        SOURCE_DIR="$HOME/.agents/skills"
+        if [ -d "$SOURCE_DIR/$item" ]; then
+            echo "Backing up skill: $item"
+            cp -R "$SOURCE_DIR/$item" "$DEST_DIR/"
+        else
+            echo "Warning: Skill '$item' not found in $SOURCE_DIR"
+        fi
     fi
-done < "skills.txt"
-
-if [ "$BACKUP_AGENTS" = true ]; then
-    if [ -f "$HOME/.agents/AGENTS.md" ]; then
-        echo "Backing up AGENTS.md"
-        cp "$HOME/.agents/AGENTS.md" "$(pwd)/AGENTS.md"
-    else
-        echo "Warning: AGENTS.md not found in $HOME/.agents"
-    fi
-fi
+done < "whitelist.txt"
 
 echo "Backup complete!"

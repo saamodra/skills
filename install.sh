@@ -1,48 +1,44 @@
 #!/bin/bash
 set -e
 
-INSTALL_AGENTS=false
+SOURCE_SKILLS_DIR="$(pwd)/skills"
+SOURCE_FILES_DIR="$(pwd)/files"
 
-for arg in "$@"; do
-    case $arg in
-        -a|--agents-md)
-            INSTALL_AGENTS=true
-            shift
-            ;;
-    esac
-done
-
-SOURCE_DIR="$(pwd)/skills"
-DEST_DIR="$HOME/.agents/skills"
-
-mkdir -p "$DEST_DIR"
-
-if [ ! -f "skills.txt" ]; then
-    echo "Error: skills.txt not found."
+if [ ! -f "whitelist.txt" ]; then
+    echo "Error: whitelist.txt not found."
     exit 1
 fi
 
-while IFS= read -r skill; do
+while IFS= read -r item; do
     # Skip empty lines and comments
-    if [[ -z "$skill" ]] || [[ "$skill" == \#* ]]; then
+    if [[ -z "$item" ]] || [[ "$item" == \#* ]]; then
         continue
     fi
     
-    if [ -d "$SOURCE_DIR/$skill" ]; then
-        echo "Installing skill: $skill"
-        cp -R "$SOURCE_DIR/$skill" "$DEST_DIR/"
+    # Expand tilde to HOME directory
+    item="${item/#\~/$HOME}"
+    
+    if [[ "$item" == /* ]]; then
+        # It's an absolute path
+        basename_item=$(basename "$item")
+        if [ -e "$SOURCE_FILES_DIR/$basename_item" ]; then
+            echo "Installing file/dir: $item"
+            mkdir -p "$(dirname "$item")"
+            cp -R "$SOURCE_FILES_DIR/$basename_item" "$item"
+        else
+            echo "Warning: Backup for path '$item' not found in $SOURCE_FILES_DIR"
+        fi
     else
-        echo "Warning: Backup for skill '$skill' not found in $SOURCE_DIR"
+        # It's a skill name
+        DEST_DIR="$HOME/.agents/skills"
+        mkdir -p "$DEST_DIR"
+        if [ -d "$SOURCE_SKILLS_DIR/$item" ]; then
+            echo "Installing skill: $item"
+            cp -R "$SOURCE_SKILLS_DIR/$item" "$DEST_DIR/"
+        else
+            echo "Warning: Backup for skill '$item' not found in $SOURCE_SKILLS_DIR"
+        fi
     fi
-done < "skills.txt"
-
-if [ "$INSTALL_AGENTS" = true ]; then
-    if [ -f "$(pwd)/AGENTS.md" ]; then
-        echo "Installing AGENTS.md"
-        cp "$(pwd)/AGENTS.md" "$HOME/.agents/AGENTS.md"
-    else
-        echo "Warning: AGENTS.md backup not found in $(pwd)"
-    fi
-fi
+done < "whitelist.txt"
 
 echo "Installation complete!"
