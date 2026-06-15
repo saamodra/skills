@@ -20,7 +20,10 @@ while IFS= read -r item; do
     
     if [[ "$item" == /* ]]; then
         # It's an absolute path
-        BACKUP_PATH="$SOURCE_FILES_DIR${item}"
+        rel_item="${item#$HOME/}"
+        rel_item="${rel_item#/}"
+        
+        BACKUP_PATH="$SOURCE_FILES_DIR/$rel_item"
         if [ -e "$BACKUP_PATH" ]; then
             echo "Installing file/dir: $item"
             mkdir -p "$(dirname "$item")"

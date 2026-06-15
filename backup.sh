@@ -25,8 +25,12 @@ while IFS= read -r item; do
         # It's an absolute path
         if [ -e "$item" ]; then
             echo "Backing up file/dir: $item"
-            # Preserve directory structure inside the 'files' folder
-            TARGET_PATH="$FILES_DEST_DIR${item}"
+            # Remove $HOME prefix to make the path relative to HOME
+            rel_item="${item#$HOME/}"
+            # Fallback if not in HOME (strip leading slash)
+            rel_item="${rel_item#/}"
+            
+            TARGET_PATH="$FILES_DEST_DIR/$rel_item"
             mkdir -p "$(dirname "$TARGET_PATH")"
             cp -R "$item" "$TARGET_PATH"
         else
