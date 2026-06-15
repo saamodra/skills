@@ -1,2 +1,3 @@
 mr-description
 ~/.agents/AGENTS.md
+~/.config/opencode/AGENTS.md
