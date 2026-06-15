@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+INSTALL_AGENTS=false
+
+for arg in "$@"; do
+    case $arg in
+        -a|--agents-md)
+            INSTALL_AGENTS=true
+            shift
+            ;;
+    esac
+done
+
 SOURCE_DIR="$(pwd)/skills"
 DEST_DIR="$HOME/.agents/skills"
 
@@ -24,5 +35,14 @@ while IFS= read -r skill; do
         echo "Warning: Backup for skill '$skill' not found in $SOURCE_DIR"
     fi
 done < "skills.txt"
+
+if [ "$INSTALL_AGENTS" = true ]; then
+    if [ -f "$(pwd)/AGENTS.md" ]; then
+        echo "Installing AGENTS.md"
+        cp "$(pwd)/AGENTS.md" "$HOME/.agents/AGENTS.md"
+    else
+        echo "Warning: AGENTS.md backup not found in $(pwd)"
+    fi
+fi
 
 echo "Installation complete!"

@@ -22,9 +22,17 @@ Run the backup script to copy skills from your system into this repository:
 ```bash
 ./backup.sh
 ```
+To also backup the `AGENTS.md` file (from `~/.agents/AGENTS.md`), use the `--agents-md` flag:
+```bash
+./backup.sh --agents-md
+```
 
 ### 3. Installing Skills
 Run the install script to copy skills from this repository to your system:
 ```bash
 ./install.sh
+```
+To also install the `AGENTS.md` file (to `~/.agents/AGENTS.md`), use the `--agents-md` flag:
+```bash
+./install.sh --agents-md
 ```
