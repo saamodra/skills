@@ -20,11 +20,11 @@ while IFS= read -r item; do
     
     if [[ "$item" == /* ]]; then
         # It's an absolute path
-        basename_item=$(basename "$item")
-        if [ -e "$SOURCE_FILES_DIR/$basename_item" ]; then
+        BACKUP_PATH="$SOURCE_FILES_DIR${item}"
+        if [ -e "$BACKUP_PATH" ]; then
             echo "Installing file/dir: $item"
             mkdir -p "$(dirname "$item")"
-            cp -R "$SOURCE_FILES_DIR/$basename_item" "$item"
+            cp -R "$BACKUP_PATH" "$item"
         else
             echo "Warning: Backup for path '$item' not found in $SOURCE_FILES_DIR"
         fi

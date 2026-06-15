@@ -25,7 +25,10 @@ while IFS= read -r item; do
         # It's an absolute path
         if [ -e "$item" ]; then
             echo "Backing up file/dir: $item"
-            cp -R "$item" "$FILES_DEST_DIR/"
+            # Preserve directory structure inside the 'files' folder
+            TARGET_PATH="$FILES_DEST_DIR${item}"
+            mkdir -p "$(dirname "$TARGET_PATH")"
+            cp -R "$item" "$TARGET_PATH"
         else
             echo "Warning: Path '$item' not found."
         fi
