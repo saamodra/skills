@@ -1,3 +1,4 @@
 mr-description
+production-debug-human-loop
 ~/.agents/AGENTS.md
 ~/.config/opencode/AGENTS.md
