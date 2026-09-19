@@ -1,4 +1,5 @@
 mr-description
 production-debug-human-loop
+editorial-imagegen
 ~/.agents/AGENTS.md
 ~/.config/opencode/AGENTS.md

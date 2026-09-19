@@ -1,0 +1,14 @@
+interface:
+  display_name: Editorial Imagegen
+  short_description: Create clean editorial infographics without AI-looking art
+  default_prompt: Use $editorial-imagegen to turn this idea into a clean editorial
+    infographic.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
