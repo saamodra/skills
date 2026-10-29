@@ -1,5 +1,11 @@
+# Custom / Personal Skills (full backup)
 mr-description
 production-debug-human-loop
 editorial-imagegen
-~/.agents/AGENTS.md
+parallel
+team
+motion
+herdr-swarm
+
+# Custom Config Files
 ~/.config/opencode/AGENTS.md
